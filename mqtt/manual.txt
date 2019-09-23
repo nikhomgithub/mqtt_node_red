@@ -1,0 +1,60 @@
+MQTT
+https://www.youtube.com/watch?v=WmKAWOVnwjE
+Broker (server)
+- PC computer, raspberrypy)
+- local machine, remote server, cloud server
+- Open source software, or private upgrade software
+
+Connection
+
+                              ---sub-'temp','humid' ---> client (db server)
+        <--sub 'humid'---    ||
+client  ---pub 'temp'--->  server ---sub 'temp'---> client (arduino)
+(sensor+arudiono)        (port 8883) 
+                             /\
+                             ||
+                             ||
+client  ---pub 'humid'---------   
+(sensor)
+- All client and server can both sub or pub 
+- All client connect to server as center only via port '8883'  (easy to maintain, security )
+- client connect to server in subject line called 'Topic' 
+- publish topic mean send info regarding to that topic to server
+- subscribe topic mean to get info regarding that topic from server 
+- security TLS Encryption, Username&password, Optional Certification
+- each client unaware of others (ip address, domain)
+- broker server have backup(redundance server) when server offline or overload 
+- MQTT broker software have many version, open-source as standard, or specific one for addtion feature 
+  such as Sparkplug
+- Retained Message from a client_A is kept at broker for some time (or use db server as client to sub & store message), 
+  client_B can sub that message any time, even client_A go offline 
+- Persistant Sessions , broker also keep track of each topic (which client pub, or which client sub) or
+  or keep client-online-record   ==> al this info is loged in broker as session ==> 
+  some client might go offline/loss connection server will know and when it come back online broker will
+  send new info at the point where that client left off without client to resend sub 'topic'  again
+- Normally when client_A first connect to broker, it will send 
+  -birth, 
+  - death, 
+  -last will and testament  
+  to broker  + with keep alive timer 
+  and broker will send birth of client_A to other client let everyone know client_A is alive
+  during client_A connection, it will send heartbeat to broker to let broker know it is alive as mention in keep-alive-timer
+  also broker will send death of client_A to other client when client_B end 
+- However if client_A disconnect unexpectedly it will not send hearbeat to broker, broker will know and 
+  inform all client with last will and testament 
+
+- when to interact with each other, client need sub to birth, death, lastwill 
+
+
+https://www.youtube.com/watch?v=CjG0JXCGye0
+
+https://www.youtube.com/watch?v=VSwu-ZYiTxg
+
+https://www.youtube.com/watch?v=WmKAWOVnwjE
+
+https://www.youtube.com/watch?v=PgsH43Tpqjc
+
+https://www.youtube.com/watch?v=OOqS8fhd6ck
+
+https://www.youtube.com/watch?v=vcOE2XAQHzY
+

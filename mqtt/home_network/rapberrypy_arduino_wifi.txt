@@ -1,0 +1,172 @@
+From https://www.youtube.com/watch?v=PgsH43Tpqjc
+
+//github.com/ItKindaWorks
+//github.com/knolleary/pubsubclient
+
+//ESP8266 Simple MQTT light controller
+
+
+wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
+sudo apt-key add mosquitto-repo.gpg.key
+
+make respo available to apt:
+cd /etc/apt/sources.list.d/
+
+Select one of these depend on debian version
+sudo wget http://repo.mosquitto.org/debian/mosquitto-wheezy.list
+sudo wget http://repo.mosquitto.org/degian/mosquitto-jessie.list
+
+Then update apt info
+apt-get update
+
+And discover what mosquitto packages are available
+apt-cache search mosquitto
+
+Or just install both server & clients
+apt-get install mosquitto mosquitto-clients
+
+
+Test Run
+client
+$mosquitto_sub -t "/test/topic"
+
+server
+$mosquitto_pub -t "/test/topic" -m "Hello"
+
+======================================
+Arduino on ESP8266Wifi
+
+#include <PubSubClient.h>
+#include <ESP8266Wifi.h>
+
+#define MQTT_SERVER "YOUR.MQTT.SERVER.IP"    ==>192.168.1.104 (Raspberypi)
+const char* ssid="YOUR_SSID";                ==> wifi ssid (name)
+const char* password="YOUR_PASSWORD"         ==> wifi password 
+
+//LED on ESP8266 GPIO2
+const int lightPin=2;
+
+char* lightTopic="/test/light1"
+
+WifiClient wifiClient;
+PubSubClient client(MQTT_SERVER,1883,callback,wifiClient) 
+
+void setup(){
+    //initialize the light as an output and set to LOW (off)
+    pinMode(lightPin,OUTPUT);
+    digitalWrite(lightPin,LOW);
+
+    //start serial line for debug 
+    Serial.begin(9600);
+    delay(100)
+
+    //start wifi sybsystem
+    Wifi.begin(ssid,password);
+    //attempt to connect to Wifi Network and then connect to MQTT server
+    reconnect();
+
+    //wait a bit before start main loop
+    delay(2000);
+}
+
+void loop(){
+    //reconnect if connection fail
+    if(!client.connected() && Wifi.status()==3){
+        reconnect();
+    }
+    //maintain MQTT connection
+    client.loop();
+
+    //MUST delay to allow ESP8266 WIFI function to Run
+    delay(10);
+}
+
+void callback(char* topic,byte* payload, unsigned int length){
+    
+    //convert topic to string to make it easier to work with
+    String topicStr = topic
+
+    //print out some debugging info
+    Serial.println("Callback update");
+    Serial.println("Topic: ");
+    Serial.println(topicStr);
+
+    //turn the light on if the payload is "1" and publish to MQTT server a confirm message
+
+    if(payload[0]=='1'){
+        digitalWrite(lightPin,HIGH);
+        client.publish("/test/confirm","light On")
+    }
+    if(payload[0]=='2'){
+        digitalWrite(lightPin,LOW);
+        client.publish("/test/confirm","light off")
+    }
+
+}
+
+void reconnect(){
+    //attempt to connect to wifi if connection fail
+    if(wifi.status()!= WL_CONNECTED){
+        //debug printing
+        Serial.print("Connecting to ");
+        Serial.println(ssid);
+    
+
+        //loop while we wait for connection
+        while(Wifi.status != WL_CONNECTED){
+            delay(500);
+            Serial.print(".");
+        }
+
+        //print out some more debug once connected
+        Serial.println("");
+        Serial.println("Wifi connected");
+        Serial.println("IP address:");
+        Serial.println(Wifi.localIP());
+    }
+
+    //make sure we are connected to WIFI  before attempt to reconnect to MQTT
+    if(Wifi.status()==WL_CONNECTED){
+        //Loop unil we are reconnect to MQTT server
+        while(!client.connected()){
+            Serial.print("Attempting MQTT connection...");
+
+            //Generate client name based on MAC address and last 8 bits of microsecond counter
+            String clientName;
+            clientName +="ESP8266-";
+            uint8_t mac[6];
+            Wifi.macAddress(mac);
+            clientName+macToString(mac)
+
+            //if connected, subscribe to the topic(s) we want to be notified about
+            if(client.connect((char*) clientName.c_str())){
+                Serial.print("\tMQTT Connected");
+                client.subscribe(lightTopic);
+            }
+            //otherwise print fail for debuging
+            else {
+                Serial.println("\tFailed");
+                abort();
+            }
+            
+
+        }
+
+    }
+}
+
+//generate unique name from MAC address
+String macToStr(cons uint8_t* mac){
+    String result;
+
+    for(int i=0;i<6;i++){
+        result += String(mac[i],16);
+
+        if(i<5){
+            result +=":";
+        }
+    
+    }
+    return result;
+
+}

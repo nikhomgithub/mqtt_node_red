@@ -1,0 +1,79 @@
+https://www.youtube.com/watch?v=CjG0JXCGye0
+
+Network
+
+Wifi
+Ethernet shield
+
+/*
+publishing in callback
+- connects to MQTT server
+- subscribe to topic "inTopic"
+- when message is received, republish it to "outTopic"
+
+This example show how to control pins using Ethernet shield via MQTT
+=======================================
+=======================================
+*/
+
+#include <SPI.h>
+#include <Ethernet.h>
+#include <PubSubClient.h>
+
+//set network config
+byte mac[] = {0xDE, 0xED, 0xBA, 0xFE, 0xFE, 0xED };
+IPAddress ip(192, 168, 1, 100);
+IPAddress server(192, 168, 1, 106);
+
+const int lightPin = 8;
+
+//calback function header
+void callback(char* topic, byte* payload, unsigned int length);
+
+EthernetClient ethClient;
+PubSubClient client (server,1883,callback,ethClient);
+
+//callback function
+void callback(char* topic, byte* payload, unsigned int length){
+    //turn the LED ON if the payload is '1' and publish to MQTT server a confirmation message
+    if(payload[0]=='1'){
+        digitalWrite(lightPin,HIGH);
+        client.publish("outTopic","Light On");
+    }
+
+    //turn LED OFF if the payload is '0' and publish to MQTT server a confirmation message
+    if(payload[0]=='0'){
+        digitalWrite(lightPin,LOW);
+        client.publish("outTopic","Light Off");
+    }
+}
+
+void setup(){
+    pinMode(lightPin, OUTPUT);
+    digitalWrite(lightPin,LOW);
+
+    Ethernet.begin(mac,ip);
+    if(client.connect("arduinoClient")){
+        client.publish("outTopic","Hello World");
+        client.subscribe("inTopic");
+    }
+
+}
+
+void loop(){
+    client.loop();
+}
+
+
+=============================================
+ethenet begin
+client connect
+client pub               --->     server sub
+
+client sub ligth on      <---     server pub 1  
+client pub               --->     server sub
+
+client sub ligth on      <---     server pub 0  
+client pub               --->     server sub
+
+==============================================

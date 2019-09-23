@@ -1,0 +1,14 @@
+- node red is a visualize IDE to use node JS
+https://www.youtube.com/watch?v=3AR432bguOY&list=PLKYvTRORAnx6a9tETvF95o35mykuysuOw
+
+
+- You can create server from node_red especially for IoT project
+- many function such as
+- MQTT INPUT / OUTPUT
+- HTTP GET/POST/
+- Send Email
+- and etc
+
+
+
+

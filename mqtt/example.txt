@@ -1,0 +1,20 @@
+https://www.youtube.com/watch?v=VSwu-ZYiTxg
+
+broker=mosquitto   ==> use PC as broker
+
+$mosquitto_pub -t "ToDevice/RaspberryPi" -m "RESET"     
+
+$mosquitto_pub -t "ToDevice/Arduino" -m "RESET"
+
+$mosquitto_pub -t "ToDevice/WemosD1" -m "RESET"
+
+$mosquitto_pub -t "ToDevice/All" -m "RESET"
+
+
+connection
+
+RaspberryPi(on-board ethernet socket)
+
+Arduino+ethernet wifi shield 
+
+Wemos(on-board wifi) 

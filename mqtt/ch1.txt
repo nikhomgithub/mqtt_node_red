@@ -1,0 +1,77 @@
+How to install
+    sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
+    sudo apt-get update
+    sudo apt-get install mosquitto
+    sudo apt-get install mosquitto-clients
+
+stop
+    sudo service stop mosquitto
+    sudo /etc/init.d/mosquitto stop
+
+    sudo service start mosquitto #see note later
+    sudo /etc/init.d/mosquitto start
+
+run 
+    mosquitto [-c config_file] [-d] [-h] [-p port]
+    -c : specify the broker config file.
+    -d : put the broker into the background after starting.
+    -h : display this help.
+    -p : start the broker listening on the specified port.
+         Not recommended in conjunction with the -c option.
+    -v : verbose mode - enable all logging types. This overrides
+         any logging options given in the config file.
+
+config
+    /etc/mosquitto/mosquitto.conf  default
+    copy this conf as backup / or user other conf
+
+example
+
+    Start mosquitto and listen on port 1883
+    mosquitto -p 1883
+
+    Start mosquitto as a daemon and use the mosquitti-2.conf file.
+    mosquitto -c /etc/mosquitto/mosquitto-2.conf -d
+
+
+Useful Linux Commands
+    ps -aux | grep mosquitto
+    pgrep mosquitto
+    kill -9 PID (that you get from above command)
+
+    service --status-all
+
+
+example
+Useful Flag Options and Examples
+
+-r  Sets retain flag
+-n  Sends Null message useful for clearing retain message.
+-p – Set Port number Default is 1883
+-u – Provide a username
+-P – Provide a password
+-i – Provide client name
+-I – Provide a client id prefix- Used when testing client restrictions using prefix security.
+
+Publishing JSON Data
+{
+    "value1":20,
+    "value2":40
+}
+
+mosquitto_pub -h localhost -t test -m "{\"value1\":20,\"value2\":40}"
+
+basic 
+sub >>    mosquitto_sub -h localhost -t "test"
+pub >>    mosquitto_pub -h 192.168.1.184 -m "test sms" -t "test"
+
+with debugin -d
+sub >>    mosquitto_sub -h localhost -t "test" -d
+    Client mosq/SRDzJtsQoJ9H0kvzDt sending CONNECT
+    Client mosq/SRDzJtsQoJ9H0kvzDt received CONNACK (0)
+    Client mosq/SRDzJtsQoJ9H0kvzDt sending PUBLISH (d0, q0, r0, m1, 'test', ... (16 bytes))
+    Client mosq/SRDzJtsQoJ9H0kvzDt sending DISCONNECT
+pub >>    mosquitto_pub -h 192.168.1.184 -m "test sms" -t "test"
+
+
+
