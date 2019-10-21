@@ -1,3 +1,39 @@
+https://www.youtube.com/watch?v=PgsH43Tpqjc
+
+============================
+pc/raspberry pi as sever(mqtt broker) , esp8266 as client
+
+- install mosquito in pc/raspberry pi
+
+- test
+
+-terminal 1
+    $ mosquitto_sub -t "/test/number1"
+
+-terminal 2
+    $ mosquitto_pub -t "/test/number1" -m "Hello"
+                    topic              message
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////
+@pc/raspberry pi 
+
 How to install
     sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
     sudo apt-get update
@@ -73,5 +109,5 @@ sub >>    mosquitto_sub -h localhost -t "test" -d
     Client mosq/SRDzJtsQoJ9H0kvzDt sending DISCONNECT
 pub >>    mosquitto_pub -h 192.168.1.184 -m "test sms" -t "test"
 
-
+==============================================================
 
