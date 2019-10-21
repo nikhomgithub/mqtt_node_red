@@ -1,5 +1,8 @@
-https://www.youtube.com/watch?v=PgsH43Tpqjc
+https://www.youtube.com/watch?v=P_ecAFpUADU
 
+=====================
+
+https://www.youtube.com/watch?v=PgsH43Tpqjc
 ============================
 pc/raspberry pi as sever(mqtt broker) , esp8266 as client
 
