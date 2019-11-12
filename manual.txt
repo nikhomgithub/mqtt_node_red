@@ -1,0 +1,50 @@
+There are many mqtt broker
+
+1. mosca 
+https://www.npmjs.com/package/mosca
+https://github.com/mcollina/mosca
+
+=====================================
+//docker container run -d -p 27017:27017 --name mymongo mongo
+=====================================
+var mosca = require('mosca');
+
+var ascoltatore = {
+  //using ascoltatore
+  type: 'mongo',
+  //url:"mongodb+srv://nikhom123:meemee@cluster0-7ll9a.gcp.mongodb.net/mqtt?retryWrites=true",
+  url: 'mongodb://localhost:27017/mqtt',
+  pubsubCollection: 'ascoltatori',
+  mongo: {}
+};
+
+var settings = {
+  port: 1884,
+  backend: ascoltatore
+};
+
+var server = new mosca.Server(settings);
+
+server.on('clientConnected', function(client) {
+    console.log('client connected', client.id);
+});
+
+// fired when a message is received
+server.on('published', function(packet, client) {
+  console.log('Published', packet.payload);
+});
+
+server.on('ready', setup);
+
+// fired when the mqtt server is ready
+function setup() {
+  console.log('Mosca server is up and running');
+}
+=======================================
+
+2. mqtt-node
+https://www.npmjs.com/package/mqtt-node
+http://mcollina.github.io/mqtt_and_nodejs/
+
+Example
+https://github.com/lwmqn/lwmqn-demo
